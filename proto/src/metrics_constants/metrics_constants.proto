@@ -7448,5 +7448,8 @@ message MetricsEvent {
     // ZENITH Metrics
     ZENITH = 2772;
 
+    // Zenlabs
+    ZENLABS = 4000;
+
   }
 }
