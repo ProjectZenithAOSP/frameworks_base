@@ -70,6 +70,7 @@ import com.android.systemui.statusbar.policy.FlashlightController;
 import com.android.systemui.statusbar.policy.HeadsUpManager;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.statusbar.policy.RemoteInputQuickSettingsDisabler;
+import com.android.systemui.statusbar.policy.SecureLockscreenQSDisabler;
 
 import dagger.Lazy;
 
@@ -78,13 +79,13 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
-/** */
 @SysUISingleton
 public class CentralSurfacesCommandQueueCallbacks implements CommandQueue.Callbacks {
+
     private final CentralSurfaces mCentralSurfaces;
     private final Context mContext;
     private final ScreenPinningRequest mScreenPinningRequest;
-    private final com.android.systemui.shade.ShadeController mShadeController;
+    private final ShadeController mShadeController;
     private final CommandQueue mCommandQueue;
     private final PanelExpansionInteractor mPanelExpansionInteractor;
     private final Lazy<ShadeInteractor> mShadeInteractorLazy;
@@ -113,6 +114,8 @@ public class CentralSurfacesCommandQueueCallbacks implements CommandQueue.Callba
     private final QSHost mQSHost;
     private final FlashlightController mFlashlightController;
     private final KeyguardInteractor mKeyguardInteractor;
+    private final SecureLockscreenQSDisabler mSecureLockscreenQSDisabler;
+
     private static final VibrationAttributes HARDWARE_FEEDBACK_VIBRATION_ATTRIBUTES =
             VibrationAttributes.createForUsage(VibrationAttributes.USAGE_HARDWARE_FEEDBACK);
 
@@ -154,7 +157,8 @@ public class CentralSurfacesCommandQueueCallbacks implements CommandQueue.Callba
             ActivityStarter activityStarter,
             KeyguardInteractor keyguardInteractor,
             EmergencyGestureIntentFactory emergencyGestureIntentFactory,
-            FlashlightController flashlightController) {
+            FlashlightController flashlightController,
+            SecureLockscreenQSDisabler secureLockscreenQSDisabler) {
         mCentralSurfaces = centralSurfaces;
         mQsController = quickSettingsController;
         mContext = context;
@@ -184,6 +188,7 @@ public class CentralSurfacesCommandQueueCallbacks implements CommandQueue.Callba
         mQSHost = qsHost;
         mFlashlightController = flashlightController;
         mKeyguardInteractor = keyguardInteractor;
+        mSecureLockscreenQSDisabler = secureLockscreenQSDisabler;
         mVibrateOnOpening = resources.getBoolean(R.bool.config_vibrateOnIconAnimation);
         mCameraLaunchGestureVibrationEffect = getCameraGestureVibrationEffect(
                 mVibratorOptional, resources);
@@ -275,6 +280,7 @@ public class CentralSurfacesCommandQueueCallbacks implements CommandQueue.Callba
         mDisabled1 = state1;
 
         state2 = mRemoteInputQuickSettingsDisabler.adjustDisableFlags(state2);
+        state2 = mSecureLockscreenQSDisabler.adjustDisableFlags(state2);
         final int old2 = mDisabled2;
         final int diff2 = state2 ^ old2;
         mDisabled2 = state2;
