@@ -670,7 +670,7 @@ constructor(
         this.mediaViewHolder = mediaViewHolder
 
         // Setting up seek bar.
-        seekBarObserver = SeekBarObserver(mediaViewHolder)
+        seekBarObserver = SeekBarObserver(mediaViewHolder, alwaysOnTime = true) 
         seekBarViewModel.progress.observeForever(seekBarObserver)
         seekBarViewModel.attachTouchHandlers(mediaViewHolder.seekBar)
         seekBarViewModel.setScrubbingChangeListener(scrubbingChangeListener)
